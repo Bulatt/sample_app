@@ -9,6 +9,8 @@ group :development, :test do
   gem 'rspec-rails', '2.13.1'
 end
 # Use SCSS for stylesheets
+gem  'minitest'
+
 gem 'sass-rails', '~> 4.0.3'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
