@@ -1,7 +1,8 @@
 class UsersController < ApplicationController
-  before_action :signed_in_user, only: [:index, :edit, :update, :destroy]
-  before_action :correct_user,   only: [:edit, :update]
-  before_action :admin_user,     only: :destroy
+  before_action :signed_in_user,   only: [:index, :edit, :update, :destroy]
+  before_action :correct_user,     only: [:edit, :update]
+  before_action :admin_user,       only: :destroy
+  before_action :unsigned_in_user, only: [:create, :new]
 
 
   def index
@@ -28,11 +29,9 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = User.find(params[:id])
   end
 
   def update
-    @user = User.find(params[:id])
     if @user.update_attributes(user_params)
       flash[:success] = "Profile updated"
       redirect_to @user
@@ -42,8 +41,13 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    User.find(params[:id]).destroy
-    flash[:success] = "User deleted."
+    user = User.find(params[:id])
+    unless current_user?(user)
+      user.destroy
+      flash[:success] = "User deleted."
+    else
+      flash[:error] = "You can't destroy yourself."
+    end
     redirect_to users_url
   end
 
@@ -67,6 +71,10 @@ class UsersController < ApplicationController
 
     def admin_user
       redirect_to(root_url) unless current_user.admin?
+    end
+
+    def unsigned_in_user
+        redirect_to root_url , notice: "You are already signed in." if signed_in?
     end
 
 end
